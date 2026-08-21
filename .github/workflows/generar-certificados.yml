@@ -21,7 +21,7 @@ jobs:
 
       - name: Instalar dependencias
         run: |
-          pip install qrcode playwright
+          pip install qrcode pillow playwright
           python -m playwright install --with-deps chromium
 
       - name: Generar certificados
