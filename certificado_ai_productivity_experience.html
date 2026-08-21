@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Certificado — AI Productivity Experience</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #0a0a0f;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .page {
+    width: 297mm;
+    height: 210mm;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse at top left, #10131f 0%, #0a0a0f 55%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Círculos ambientales translúcidos */
+  .glow-1 {
+    position: absolute; top: -180px; left: -160px;
+    width: 520px; height: 520px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(45,127,249,0.35) 0%, rgba(45,127,249,0) 70%);
+  }
+  .glow-2 {
+    position: absolute; bottom: -220px; right: -180px;
+    width: 620px; height: 620px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(45,127,249,0.25) 0%, rgba(45,127,249,0) 70%);
+  }
+  .glow-3 {
+    position: absolute; top: 40%; right: 8%;
+    width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(120,170,255,0.18) 0%, rgba(120,170,255,0) 70%);
+  }
+
+  /* Marco geométrico sutil */
+  .frame {
+    position: absolute;
+    top: 14mm; left: 14mm; right: 14mm; bottom: 14mm;
+    border: 1px solid rgba(120,160,255,0.25);
+    border-radius: 18px;
+    pointer-events: none;
+  }
+  .frame::before, .frame::after {
+    content: '';
+    position: absolute;
+    width: 46px; height: 46px;
+    border: 2px solid #2D7FF9;
+  }
+  .frame::before { top: -2px; left: -2px; border-right: none; border-bottom: none; border-top-left-radius: 16px; }
+  .frame::after { bottom: -2px; right: -2px; border-left: none; border-top: none; border-bottom-right-radius: 16px; }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 0 26mm;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .brand-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #2D7FF9;
+    box-shadow: 0 0 14px 3px rgba(45,127,249,0.8);
+  }
+  .brand-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #8fb3ff;
+  }
+
+  .title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 10px;
+  }
+
+  .headline {
+    font-size: 44px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ffffff 0%, #cfe0ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 26px;
+  }
+
+  .grants {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 6px;
+  }
+
+  .student-name {
+    font-size: 52px;
+    font-weight: 800;
+    color: #ffffff;
+    padding: 6px 40px 14px;
+    border-bottom: 2px solid #2D7FF9;
+    margin-bottom: 26px;
+    min-width: 60%;
+  }
+
+  .description {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.72);
+    max-width: 620px;
+    margin-bottom: 40px;
+  }
+  .description strong { color: #ffffff; font-weight: 700; }
+
+  .footer {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+
+  .footer-block {
+    text-align: left;
+    min-width: 200px;
+  }
+  .footer-block.right { text-align: right; }
+
+  .footer-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+  .footer-line {
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,255,0.25);
+    margin-bottom: 6px;
+  }
+  .footer-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .verify {
+    position: absolute;
+    bottom: 18mm;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .qr-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .qr-block img {
+    width: 64px;
+    height: 64px;
+    padding: 6px;
+    background: #ffffff;
+    border-radius: 8px;
+  }
+  .qr-caption {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+  }
+
+  @media print {
+    @page { size: 297mm 210mm; margin: 0; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { width: 100vw; height: 100vh; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+    <div class="glow-3"></div>
+    <div class="frame"></div>
+
+    <div class="content">
+      <div class="brand">
+        <div class="brand-dot"></div>
+        <div class="brand-name">AI Productivity Experience</div>
+      </div>
+
+      <div class="title">Certificado de Participación</div>
+      <div class="headline">Programa de IA &amp; Productividad</div>
+
+      <div class="grants">Se otorga el presente certificado a</div>
+      <div class="student-name">{{NOMBRE}}</div>
+
+      <div class="description">
+        Por su participación activa y cumplimiento del programa
+        <strong>AI Productivity Experience</strong>, 5 sesiones prácticas sobre
+        Fundamentos de IA, Investigación y Datos, Contenido y Comunicación,
+        Audio y Video, e Imagen &amp; Proyecto Final, realizado del
+        <strong>11 al 25 de agosto de 2026</strong>.
+      </div>
+
+      <div class="footer">
+        <div class="footer-block">
+          <div class="footer-value">Francisco Suero Pereyra</div>
+          <div class="footer-line"></div>
+          <div class="footer-label">Instructor · AI Productivity Experience</div>
+        </div>
+        <div class="qr-block">
+          <img src="{{QR_BASE64}}" alt="QR de verificación">
+          <div class="qr-caption">Verificar</div>
+        </div>
+
+        <div class="footer-block right">
+          <div class="footer-value">25 de agosto de 2026</div>
+          <div class="footer-line"></div>
+          <div class="footer-label">Fecha de emisión</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="verify">verify.suytex.com/{{CODIGO}}</div>
+  </div>
+</body>
+</html>

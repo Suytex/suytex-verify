@@ -1,0 +1,46 @@
+name: Generar certificados
+
+on:
+  push:
+    paths:
+      - 'alumnos.csv'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: |
+          pip install qrcode playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Generar certificados
+        run: python3 generar_certificados.py alumnos.csv
+
+      - name: Publicar páginas de verificación
+        run: cp -r output/verify/* .
+
+      - name: Commit y push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Nueva tanda de certificados — run ${{ github.run_number }}"
+          git push
+
+      - name: Crear Release con PDFs
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: tanda-${{ github.run_number }}
+          name: "Certificados — Tanda ${{ github.run_number }}"
+          files: output/certificados/*.pdf
