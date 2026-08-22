@@ -126,7 +126,9 @@ guarda con `img.save()`. Sin pillow, revienta al generar el primer QR.
 | `.github/workflows/generar-certificados.yml` | El pipeline |
 | `CNAME` | `verify.suytex.com` — dominio de GitHub Pages |
 | `ape-2026-000X/index.html` | Páginas publicadas (**generadas, no editar a mano**) |
-| `index.html` | ⚠️ Ver "Pendientes conocidos" abajo |
+| `index.html` | Landing del sitio + buscador de códigos (hecho a mano) |
+| `404.html` | Página de "código no encontrado". Pages la sirve sola |
+| `isc/index.html` | Página suelta, de otro programa. Ver §8 |
 | `DISENO_CERTIFICADO.md` | Decisiones de diseño del certificado |
 
 ### Placeholders de los templates
@@ -249,21 +251,69 @@ La cabecera del CSV no coincide. Tiene que ser exactamente `nombre,codigo`.
 
 ---
 
-## 8. Pendientes conocidos
+## 8. La raíz del sitio
 
-### `index.html` en la raíz
+Estas tres páginas son **hechas a mano** — no las genera el script, y el
+workflow no las toca (ver más abajo).
 
-Hoy `verify.suytex.com/` sirve una página de certificado de **un alumno
-concreto** (Isaac Suero Cerda) en vez de algo del sistema.
+| URL | Archivo | Qué es |
+|---|---|---|
+| `verify.suytex.com/` | `index.html` | Landing + buscador de códigos |
+| Cualquier ruta inexistente | `404.html` | "Este código no corresponde a ningún certificado" |
+| `verify.suytex.com/isc/` | `isc/index.html` | Página de otro programa (ver abajo) |
 
-**Origen** (según el historial de git): no es un artefacto del `cp -r output/verify/*`
-— ese paso solo crea *directorios* `{codigo}/`, nunca un `index.html` en la raíz.
-Es una página hecha a mano en `72ff74a`, cuando el `CNAME` apuntaba a
-`isc.suytex.com` (`8305846`). Al revertir el dominio a `verify.suytex.com`
-(`b891d35`), la página quedó huérfana en la raíz.
+### El buscador de la raíz
 
-Nota: su contenido **no** es el del programa AI Productivity Experience — habla de
-billetera de Bitcoin y de apoyo en operaciones diarias. Es un certificado distinto.
+Un input y un botón, sin backend. Normaliza la entrada **con el mismo criterio
+que `slugify_codigo()`** en el script, y redirige a `/{codigo}`:
 
-**Sin resolver:** falta decidir qué va en la raíz (landing del sistema, buscador
-de códigos, o 404) y dónde reubicar la página de Isaac.
+```js
+valor.trim().toLowerCase().replace(/\s+/g, '-')
+```
+
+Esto importa porque el certificado muestra `APE-2026-0001` pero la URL publicada
+es `/ape-2026-0001`. Sin normalizar, quien escriba el código en mayúsculas —o sea,
+tal como lo ve en su certificado— se lleva un 404.
+
+Casos cubiertos: mayúsculas, minúsculas, espacios alrededor, espacios internos
+(`APE 2026 0003` → `/ape-2026-0003`), Enter además del clic, e input vacío (no
+redirige y muestra un aviso).
+
+El destino se construye con `encodeURIComponent`, no por estética: sin él, un
+valor como `/ejemplo.com` produciría `//ejemplo.com`, que el navegador interpreta
+como URL protocol-relative y sacaría al visitante del sitio.
+
+### `404.html`
+
+GitHub Pages lo sirve automáticamente en cualquier ruta que no exista, dejando la
+URL intentada en la barra. La página la muestra para ayudar a detectar el typo, y
+enlaza de vuelta a la raíz.
+
+⚠️ Sus rutas internas son **absolutas** (`/logo_white.png`, `/`), y tiene que
+seguir así. Con rutas relativas, un 404 en `/ape-9999` buscaría el logo en
+`/ape-9999/logo_white.png` y saldría roto.
+
+### `isc/index.html`
+
+Es la página que **antes ocupaba la raíz**, movida aquí sin cambios.
+
+Origen: la escribiste a mano en `72ff74a`, cuando el `CNAME` apuntaba a
+`isc.suytex.com` (`8305846`, isc = Isaac Suero Cerda). Al revertir el dominio a
+`verify.suytex.com` (`b891d35`), quedó huérfana sirviéndose como portada del
+sitio — o sea, `verify.suytex.com/` mostraba el certificado de un alumno concreto.
+
+Su contenido **no es** del AI Productivity Experience: habla de billetera de
+Bitcoin y de apoyo en operaciones diarias. Es un certificado de otro programa, y
+por eso no se fusionó con `ape-2026-0001/`, que es la verificación de Isaac para
+este programa y es otra cosa.
+
+Vive en `isc/` para conservar el guiño al subdominio original.
+
+### Por qué el workflow no las pisa
+
+El paso "Publicar paginas de verificacion" hace `cp -r output/verify/* .`, y
+`output/verify/` contiene **solo directorios** `{codigo}/` — nunca archivos
+sueltos. Así que no puede sobrescribir `index.html` ni `404.html`.
+
+`isc/` tampoco corre riesgo: solo lo pisaría un alumno cuyo código slugificara
+exactamente a `isc`, imposible con el formato `APE-AAAA-NNNN`.

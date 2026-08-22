@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificado no encontrado — Suytex Academy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --brand-blue: #1c57e6;
+    --ink: #1a1a2e;
+  }
+
+  html, body {
+    width: 100%; min-height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    position: relative; overflow-x: hidden;
+    background: linear-gradient(135deg, #cfe4fb 0%, #ffffff 40%, #ffffff 62%, #cfe5fc 100%);
+  }
+  .glow-1 { position: fixed; top: -180px; left: -160px; width: 480px; height: 480px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,112,228,0.28) 0%, rgba(0,112,228,0) 70%); }
+  .glow-2 { position: fixed; bottom: -220px; right: -180px; width: 560px; height: 560px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,112,228,0.20) 0%, rgba(0,112,228,0) 70%); }
+
+  .card {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 480px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(28,87,230,0.18);
+    border-radius: 20px;
+    padding: 40px 34px;
+    backdrop-filter: blur(12px);
+    text-align: center;
+  }
+
+  .brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 26px; }
+  .brand img { width: 44px; height: 44px; }
+  .brand-text {
+    font-size: 13px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase;
+    color: var(--ink); line-height: 1.35; text-align: left;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.28);
+    color: #c0392b;
+    font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px;
+    margin-bottom: 20px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #c0392b; }
+
+  .headline { font-size: 22px; font-weight: 800; color: var(--ink); margin-bottom: 12px; }
+  .lede { font-size: 14px; line-height: 1.65; color: rgba(26,26,46,0.62); }
+
+  .codigo {
+    display: block;
+    margin: 18px 0;
+    font-size: 15px; font-weight: 700;
+    color: var(--ink);
+    background: #ffffff;
+    border: 1px solid rgba(28,87,230,0.2);
+    border-radius: 10px;
+    padding: 12px 15px;
+    word-break: break-all;
+  }
+
+  .cta {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 15px; font-weight: 700;
+    color: #ffffff; text-decoration: none;
+    background: var(--brand-blue);
+    border-radius: 10px;
+    padding: 14px 26px;
+    transition: background .15s;
+  }
+  .cta:hover { background: #1749c4; }
+
+  .footer-note {
+    margin-top: 26px; padding-top: 20px;
+    border-top: 1px solid rgba(28,87,230,0.15);
+    font-size: 11px; line-height: 1.6; color: rgba(26,26,46,0.45);
+  }
+</style>
+</head>
+<body>
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+
+  <main class="card">
+    <div class="brand">
+      <img src="/logo_white.png" alt="">
+      <div class="brand-text">Suytex<br>Academy</div>
+    </div>
+
+    <div class="badge"><span class="dot"></span> Sin coincidencias</div>
+    <h1 class="headline">Este código no corresponde a ningún certificado emitido</h1>
+
+    <code class="codigo" id="intento" hidden></code>
+
+    <p class="lede">
+      Revisa que lo hayas escrito igual que aparece junto al código QR de tu
+      certificado, y vuelve a intentarlo.
+    </p>
+
+    <a class="cta" href="/">Verificar otro código</a>
+
+    <p class="footer-note">
+      Si el código está correcto y sigue sin aparecer, contacta al instructor.
+    </p>
+  </main>
+
+<script>
+(function () {
+  // GitHub Pages sirve este archivo en cualquier ruta inexistente, dejando la
+  // URL intentada en la barra. Mostrarla ayuda a detectar el typo.
+  // textContent (no innerHTML) para que la ruta no pueda inyectar markup.
+  var ruta = decodeURIComponent(window.location.pathname).replace(/^\/+|\/+$/g, '');
+  // Si se entra directo a /404.html no hay codigo intentado que mostrar.
+  if (ruta && ruta !== '404.html' && ruta.length <= 48) {
+    var el = document.getElementById('intento');
+    el.textContent = ruta;
+    el.hidden = false;
+  }
+})();
+</script>
+</body>
+</html>
