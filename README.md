@@ -129,7 +129,7 @@ guarda con `img.save()`. Sin pillow, revienta al generar el primer QR.
 | `index.html` | Landing del sitio + buscador de códigos (hecho a mano) |
 | `404.html` | Página de "código no encontrado". Pages la sirve sola |
 | `isc/index.html` | Página suelta, de otro programa. Ver §8 |
-| `DISENO_CERTIFICADO.md` | Decisiones de diseño del certificado |
+| `DISENO_CERTIFICADO.md` | Decisiones de diseño de **las 4 piezas** (PDF + 3 páginas web) |
 
 ### Placeholders de los templates
 
@@ -199,8 +199,8 @@ certificado sin logo — un fallo silencioso fácil de pasar por alto.
 
 ### 6.5 El azul de marca `#1c57e6` es violáceo
 
-Difuminado sobre blanco **vira a lavanda**, que ensucia el certificado. Por eso
-hay dos azules distintos y a propósito:
+Difuminado sobre blanco **vira a lavanda**, que ensucia la pieza. Aplica a las
+cuatro (certificado y las 3 páginas web): hay dos azules distintos y a propósito:
 
 | Uso | Color | Por qué |
 |---|---|---|
@@ -209,6 +209,17 @@ hay dos azules distintos y a propósito:
 
 → Si añades un degradado o un glow nuevo, usa `rgba(0,112,228,…)`, **no**
 `#1c57e6`. Detalle completo en [`DISENO_CERTIFICADO.md`](DISENO_CERTIFICADO.md).
+
+### 6.6 Las 4 piezas no comparten CSS — hay que replicar a mano
+
+Cada archivo es autocontenido a propósito: el PDF debe funcionar sin red y las
+páginas sin build. Consecuencia: **un cambio de token (azul, degradado, tarjeta,
+lockup del logo) hay que aplicarlo en los cuatro archivos.**
+
+`verificacion_template.html` ya se desalineó una vez por esto — quedó con el
+diseño oscuro original cuando el certificado pasó a fondo claro, y el alumno
+escaneaba el QR de un certificado claro para aterrizar en una página oscura sin
+logo. Al tocar identidad, revisa los cuatro.
 
 ---
 

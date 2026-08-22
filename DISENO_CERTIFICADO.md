@@ -1,7 +1,44 @@
-# Decisiones de diseño — Certificado AI Productivity Experience
+# Decisiones de diseño — Suytex Verify
 
-Referencia para mantener coherencia visual en cambios futuros.
-Archivo que implementa todo esto: `certificado_ai_productivity_experience.html`.
+Referencia para mantener coherencia visual en cambios futuros. Cubre **las cuatro
+piezas** del sistema, no solo el certificado.
+
+| Pieza | Archivo | Rol |
+|---|---|---|
+| Certificado (PDF) | `certificado_ai_productivity_experience.html` | El entregable |
+| Página de verificación | `verificacion_template.html` | Donde aterriza el QR |
+| Landing + buscador | `index.html` | Portada del sitio |
+| Código no encontrado | `404.html` | Ruta inexistente |
+
+---
+
+## El sistema compartido
+
+Las cuatro comparten los mismos tokens. **Si cambias uno, cámbialo en las
+cuatro** — no hay CSS compartido (cada archivo es autocontenido a propósito: el
+PDF tiene que funcionar sin red y las páginas sin build).
+
+```css
+--brand-blue: #1c57e6   /* marca — SOLO en plano */
+--ink:        #1a1a2e   /* texto principal */
+
+/* Fondo, idéntico en las cuatro */
+linear-gradient(135deg, #cfe4fb 0%, #ffffff 40%, #ffffff 62%, #cfe5fc 100%)
+
+/* Glows — azul frío, nunca #1c57e6 */
+rgba(0,112,228, 0.28)  /* superior izquierdo */
+rgba(0,112,228, 0.20)  /* inferior derecho */
+```
+
+**Lockup de marca** — igual en las cuatro: logo a la izquierda, "SUYTEX /
+ACADEMY" en dos líneas a la derecha, `gap: 10px`, mayúsculas, `letter-spacing:
+1.8px`, peso 800. Logo a 44px en web, 46px en el certificado (donde rima con la
+esquina del marco).
+
+**Tipografía**: Inter en todas, vía `@import` de Google Fonts.
+
+Las secciones siguientes detallan **el certificado**. Lo específico de las
+páginas web está en "Las páginas web", al final.
 
 ---
 
@@ -175,6 +212,82 @@ nuevos. Y actualiza `CERT_TEMPLATE` en `generar_certificados.py`.
 
 ---
 
+## Las páginas web
+
+`verificacion_template.html`, `index.html` y `404.html` comparten un patrón de
+tarjeta único. La página de verificación **nació con un diseño oscuro** y se
+alineó después; si aparece otra página, sigue este patrón, no el viejo.
+
+### La tarjeta
+
+```css
+max-width: 480px;
+background: rgba(255,255,255,0.72);
+border: 1px solid rgba(28,87,230,0.18);
+border-radius: 20px;
+padding: 40px 34px;
+backdrop-filter: blur(12px);
+```
+
+Centrada vertical y horizontalmente, con los dos glows en `position: fixed`
+detrás. Translúcida sobre el degradado: por eso el fondo se percibe a través de
+la tarjeta y las cuatro piezas se sienten del mismo material.
+
+### Jerarquía tipográfica en web
+
+| Elemento | Tamaño | Peso |
+|---|---|---|
+| Nombre del alumno | 30px | 900 |
+| Titular de la página | 22–24px | 800 |
+| Lockup de marca | 13px | 800 |
+| Filas de datos | 14px | 400 / 600 |
+| Etiquetas, badge | 11–12px | 700 |
+| Nota al pie | 11px | 400 |
+
+El **nombre del alumno va en `#1c57e6`**, igual que en el certificado: es el eco
+que hace evidente que la página y el papel son lo mismo.
+
+### Badges de estado
+
+Dos, y su color es semántico — no decorativo:
+
+| Estado | Texto | Fondo | Borde |
+|---|---|---|---|
+| Válido | `#15803d` | `rgba(22,163,74,0.10)` | `rgba(22,163,74,0.32)` |
+| Sin coincidencias | `#c0392b` | `rgba(192,57,43,0.08)` | `rgba(192,57,43,0.28)` |
+
+⚠️ El verde del badge válido es **`#15803d`, no `#22c55e`**. El `#22c55e` de la
+versión oscura no tiene contraste suficiente sobre fondo claro. El punto sí
+mantiene `#16a34a`, que sobre su halo se lee bien.
+
+El badge "Certificado válido" es la **señal de confianza principal** de todo el
+sistema: es lo primero que busca un empleador verificando un certificado. No lo
+quites ni lo suavices.
+
+### Rutas absolutas, obligatorio
+
+Todas las rutas internas de las páginas web van **absolutas** (`/logo_white.png`,
+`/`):
+
+- `404.html` se sirve en cualquier ruta inexistente, así que en `/ape-9999` una
+  ruta relativa buscaría el logo en `/ape-9999/logo_white.png`.
+- Las páginas de verificación viven en `/{codigo}/`, un nivel por debajo de la
+  raíz donde está el logo.
+
+### Normalización del buscador
+
+`index.html` normaliza con el **mismo criterio que `slugify_codigo()`** del
+script: `trim` + minúsculas + espacios internos a guiones. El certificado
+muestra `APE-2026-0001` y la URL es `/ape-2026-0001`; sin normalizar, quien
+escriba el código tal como lo ve se lleva un 404. Si cambia `slugify_codigo()`,
+cambia esto también.
+
+El destino se arma con `encodeURIComponent`: sin él, un valor como
+`/ejemplo.com` produce `//ejemplo.com`, que el navegador lee como URL
+protocol-relative y saca al visitante del sitio.
+
+---
+
 ## Al cambiar el diseño, verifica en el PDF
 
 El PDF es el entregable; el HTML solo un paso intermedio. Lo que se ve bien en
@@ -193,3 +306,7 @@ Checklist:
 - [ ] Una sola página, sin recortes ni franja blanca
 - [ ] Fondo y degradados impresos, sin viraje lavanda
 - [ ] Nombre largo (~30 caracteres) sin romper el layout
+
+Y si tocaste una página web, compara **las cuatro piezas lado a lado**: el
+recorrido real es certificado impreso → escanear QR → página de verificación, y
+una sola pieza desalineada rompe la sensación de sistema.
