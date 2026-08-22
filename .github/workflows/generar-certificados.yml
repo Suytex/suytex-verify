@@ -1,11 +1,24 @@
+# Pipeline de certificados de Suytex Academy.
+#
+# Flujo: alumnos.csv -> generar_certificados.py -> PDFs a un Release
+#        + paginas de verificacion a GitHub Pages (verify.suytex.com/{codigo}).
+#
+# Documentacion completa: README.md
 name: Generar certificados
 
 on:
   push:
     paths:
+      # OJO: el filtro solo mira alumnos.csv. Un push que cambie el template, el
+      # script o el logo NO dispara nada — para eso esta workflow_dispatch.
+      # Asi cambiar el diseno no reemite tandas sin querer.
       - 'alumnos.csv'
+  # Disparo manual: gh workflow run generar-certificados.yml
+  # (o Actions -> Generar certificados -> Run workflow)
   workflow_dispatch:
 
+# Necesario para las DOS escrituras del job: crear el Release y pushear las
+# paginas de verificacion de vuelta al repo.
 permissions:
   contents: write
 
@@ -21,23 +34,42 @@ jobs:
 
       - name: Instalar dependencias
         run: |
+          # pillow NO es opcional: qrcode.make() devuelve una imagen PIL y el
+          # script la serializa con img.save(). qrcode no la arrastra sola.
           pip install qrcode pillow playwright
+          # --with-deps instala las librerias de sistema que Chromium necesita
+          # en el runner; sin ellas el navegador no arranca.
           python -m playwright install --with-deps chromium
 
       - name: Generar certificados
+        # Escribe output/certificados/*.pdf y output/verify/{codigo}/index.html
         run: python3 generar_certificados.py alumnos.csv
 
       - name: Diagnostico output
+        # Deja el arbol de output/ en el log. Es el primer sitio donde mirar si
+        # el Release sale sin PDFs: distingue "el script no genero nada" de
+        # "los genero pero el Release no los recogio".
+        # `|| echo` para que no tumbe el run cuando output/ no existe: el
+        # diagnostico tiene que sobrevivir al fallo que esta diagnosticando.
         run: ls -laR output/ || echo "NO EXISTE output/"
 
       - name: Crear Release con PDFs
+        # ORDEN IMPORTANTE: el Release va ANTES del commit/push de abajo.
+        # El paso siguiente hace `git add -A`, que recogeria output/ si no
+        # estuviera en .gitignore, y sobre todo: si el push falla, los PDFs ya
+        # estan publicados. Al reves, un fallo al commitear se llevaria por
+        # delante el entregable.
         uses: softprops/action-gh-release@v2
         with:
+          # tanda-N, con N = numero de run. Cada corrida crea su propio Release.
           tag_name: tanda-${{ github.run_number }}
           name: "Certificados - Tanda ${{ github.run_number }}"
           files: output/certificados/*.pdf
 
       - name: Publicar paginas de verificacion
+        # Copia output/verify/{codigo}/ a la raiz del repo. Pages sirve desde la
+        # raiz, asi que cada alumno necesita su directorio con index.html para
+        # que verify.suytex.com/{codigo} resuelva como URL limpia.
         run: cp -r output/verify/* .
 
       - name: Commit y push
@@ -45,5 +77,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
+          # `git diff --cached --quiet ||` evita fallar cuando no hay cambios:
+          # si los alumnos ya estaban publicados, no hay nada que commitear y
+          # `git commit` saldria con error. Ver "Everything up-to-date" en el log.
           git diff --cached --quiet || git commit -m "Nueva tanda de certificados - run ${{ github.run_number }}"
           git push
