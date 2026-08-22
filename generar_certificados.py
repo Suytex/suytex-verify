@@ -12,6 +12,7 @@ from playwright.sync_api import sync_playwright
 BASE_DIR = Path(__file__).parent
 CERT_TEMPLATE = (BASE_DIR / "certificado_ai_productivity_experience.html").read_text(encoding="utf-8")
 VERIFY_TEMPLATE = (BASE_DIR / "verificacion_template.html").read_text(encoding="utf-8")
+LOGO_FILE = BASE_DIR / "logo_white.png"
 
 VERIFY_DOMAIN = "verify.suytex.com"
 
@@ -28,6 +29,14 @@ def generar_qr_base64(url):
     return f"data:image/png;base64,{b64}"
 
 
+def cargar_logo_base64() -> str:
+    if not LOGO_FILE.exists():
+        print(f"⚠️  No encontré {LOGO_FILE.name} — el certificado quedará sin logo.")
+        return ""
+    b64 = base64.b64encode(LOGO_FILE.read_bytes()).decode("ascii")
+    return f"data:image/png;base64,{b64}"
+
+
 def main():
     if len(sys.argv) != 2:
         print("Uso: python3 generar_certificados.py alumnos.csv")
@@ -41,10 +50,10 @@ def main():
 
     rows = list(csv.DictReader(open(csv_path, newline="", encoding="utf-8")))
 
+    logo_b64 = cargar_logo_base64()
+
     with sync_playwright() as p:
-        print(f">>> Playwright chromium executable: {p.chromium.executable_path}")
         browser = p.chromium.launch()
-        print(f">>> Browser version: {browser.version}")
         page = browser.new_page()
 
         count = 0
@@ -61,6 +70,7 @@ def main():
                 .replace("{{NOMBRE}}", nombre)
                 .replace("{{CODIGO}}", codigo_raw)
                 .replace("{{QR_BASE64}}", qr_b64)
+                .replace("{{LOGO_BASE64}}", logo_b64)
             )
             html_path = out_cert_dir / f"{codigo_slug}.html"
             html_path.write_text(cert_html, encoding="utf-8")
@@ -76,11 +86,8 @@ def main():
                     print_background=True,
                     margin={"top": "0", "bottom": "0", "left": "0", "right": "0"},
                 )
-                existe = pdf_path.exists()
-                size = pdf_path.stat().st_size if existe else 0
-                print(f">>> PDF {codigo_slug}: existe={existe} size={size}")
             except Exception as e:
-                print(f">>> ERROR generando PDF de {codigo_slug}: {e}")
+                print(f"❌ ERROR generando PDF de {codigo_slug}: {e}")
                 traceback.print_exc()
 
             verify_html = (
