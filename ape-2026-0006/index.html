@@ -4,64 +4,101 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verificación de Certificado — Jasmali Rodriguez</title>
+<meta name="description" content="Verificación de autenticidad del certificado de Jasmali Rodriguez — AI Productivity Experience, Suytex Academy.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; min-height: 100%; background: #0a0a0f; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+  :root {
+    --brand-blue: #1c57e6;
+    --ink: #1a1a2e;
+    --valid: #15803d;
+  }
+
+  html, body {
+    width: 100%; min-height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
   body {
     display: flex; align-items: center; justify-content: center;
     padding: 24px;
     position: relative; overflow-x: hidden;
-    background: radial-gradient(ellipse at top left, #10131f 0%, #0a0a0f 55%);
+    /* Azul frio, NO #1c57e6: difuminado sobre blanco vira a lavanda.
+       Mismo degradado que el certificado, la landing y el 404. */
+    background: linear-gradient(135deg, #cfe4fb 0%, #ffffff 40%, #ffffff 62%, #cfe5fc 100%);
   }
   .glow-1 { position: fixed; top: -180px; left: -160px; width: 480px; height: 480px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(45,127,249,0.35) 0%, rgba(45,127,249,0) 70%); }
+    background: radial-gradient(circle, rgba(0,112,228,0.28) 0%, rgba(0,112,228,0) 70%); }
   .glow-2 { position: fixed; bottom: -220px; right: -180px; width: 560px; height: 560px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(45,127,249,0.22) 0%, rgba(45,127,249,0) 70%); }
+    background: radial-gradient(circle, rgba(0,112,228,0.20) 0%, rgba(0,112,228,0) 70%); }
 
   .card {
     position: relative; z-index: 2;
     width: 100%; max-width: 480px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(120,160,255,0.25);
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(28,87,230,0.18);
     border-radius: 20px;
     padding: 40px 34px;
     backdrop-filter: blur(12px);
     text-align: center;
   }
+
+  /* Marca: igual que en el certificado y la landing */
+  .brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 24px; }
+  .brand img { width: 44px; height: 44px; }
+  .brand-text {
+    font-size: 13px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase;
+    color: var(--ink); line-height: 1.35; text-align: left;
+  }
+
+  /* Senal de confianza principal. El verde se conserva, oscurecido para
+     tener contraste sobre fondo claro (#22c55e no se lee bien en blanco). */
   .badge {
     display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(45,127,249,0.15);
-    border: 1px solid rgba(45,127,249,0.4);
-    color: #7fb0ff;
+    background: rgba(22,163,74,0.10);
+    border: 1px solid rgba(22,163,74,0.32);
+    color: var(--valid);
     font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
     padding: 6px 14px; border-radius: 999px;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
   }
-  .check-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px 2px rgba(34,197,94,0.7); }
+  .check-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.18); }
 
-  .brand { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
-  .headline { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 26px; }
+  .programa { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(26,26,46,0.45); margin-bottom: 6px; }
+  .headline { font-size: 22px; font-weight: 800; color: var(--ink); margin-bottom: 26px; }
 
-  .name { font-size: 30px; font-weight: 900; color: #fff; margin-bottom: 4px; word-break: break-word; }
-  .name-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 24px; }
+  /* El nombre en azul de marca, en plano: es el eco del certificado,
+     donde tambien es el elemento dominante. */
+  .name { font-size: 30px; font-weight: 900; color: var(--brand-blue); margin-bottom: 4px; word-break: break-word; }
+  .name-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(26,26,46,0.45); margin-bottom: 24px; }
 
-  .details { text-align: left; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 20px; }
-  .detail-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
-  .detail-label { color: rgba(255,255,255,0.45); }
-  .detail-value { color: #fff; font-weight: 600; text-align: right; }
+  .details { text-align: left; border-top: 1px solid rgba(28,87,230,0.18); padding-top: 20px; }
+  .detail-row { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; font-size: 14px; }
+  .detail-label { color: rgba(26,26,46,0.5); }
+  .detail-value { color: var(--ink); font-weight: 600; text-align: right; }
 
-  .footer-note { margin-top: 26px; font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.6; }
+  .footer-note {
+    margin-top: 26px; padding-top: 20px;
+    border-top: 1px solid rgba(28,87,230,0.15);
+    font-size: 11px; line-height: 1.6; color: rgba(26,26,46,0.45);
+  }
+  .footer-note a { color: var(--brand-blue); font-weight: 600; text-decoration: none; }
+  .footer-note a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
   <div class="glow-1"></div>
   <div class="glow-2"></div>
 
-  <div class="card">
+  <main class="card">
+    <div class="brand">
+      <img src="/logo_white.png" alt="">
+      <div class="brand-text">Suytex<br>Academy</div>
+    </div>
+
     <div class="badge"><span class="check-dot"></span> Certificado válido</div>
-    <div class="brand">AI Productivity Experience</div>
-    <div class="headline">Verificación de participación</div>
+    <div class="programa">AI Productivity Experience</div>
+    <h1 class="headline">Verificación de participación</h1>
 
     <div class="name">Jasmali Rodriguez</div>
     <div class="name-label">Nombre del alumno</div>
@@ -73,7 +110,11 @@
       <div class="detail-row"><span class="detail-label">Código</span><span class="detail-value">APE-2026-0006</span></div>
     </div>
 
-    <div class="footer-note">Esta página confirma la autenticidad del certificado emitido por AI Productivity Experience. Si tienes dudas sobre su validez, contacta al instructor.</div>
-  </div>
+    <p class="footer-note">
+      Esta página confirma la autenticidad del certificado emitido por Suytex Academy.
+      Si tienes dudas sobre su validez, contacta al instructor.
+      <a href="/">Verificar otro código</a>
+    </p>
+  </main>
 </body>
 </html>
